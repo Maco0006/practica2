@@ -13,7 +13,7 @@ public class DtoHistorialMapper implements RowMapper<DtoHistorial> {
 	public DtoHistorial mapRow(ResultSet rs, int rowNum) throws SQLException{
 		
 		DtoHistorial dto = new DtoHistorial();
-		dto.setParkingid(rs.getInt("ParkingId"));
+		dto.setParkingId(rs.getInt("ParkingId"));
 		dto.setMatricula(rs.getString("Matricula"));
 		dto.setTimestamp(rs.getTimestamp("TimeStamp"));
 		return dto;

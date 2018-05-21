@@ -1,7 +1,9 @@
 package org.ingservicios.parking;
 
 import java.util.List;
+
 import javax.sql.DataSource;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DaoHistorial implements DaoHistorial_Interface {
@@ -16,11 +18,20 @@ public class DaoHistorial implements DaoHistorial_Interface {
 	
 	public void insertar(DtoHistorial dto){
 		//Sentencia SQL
-		String sql = "insert into historial values(?,?,?,?)";
+		String sql = "insert into historial (ParkingId, Matricula) values(?,?)";
 		
 		//Indicamos los parametros (tipo de objeto generico), para la consulta
 		//Cuidado con el orden de parámetros, ya que la base de datos puede interpretar mal
-		Object[] parametros ={0,dto.getParkingid(),dto.getMatricula(),dto.getTimestamp()};
+		Object[] parametros ={dto.getParkingId(),dto.getMatricula()};
+		this.jdbcTemplate.update(sql,parametros);
+	}
+	
+	public void actualizar_barrera(DtoHistorial dto){
+		
+		String sql = "update historial set ParkingId= ?, TimeStamp = ? where Matricula= ?";
+		
+		Object[] parametros ={dto.getParkingId(),dto.getTimestamp(),dto.getMatricula()};
+		
 		this.jdbcTemplate.update(sql,parametros);
 	}
 	

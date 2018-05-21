@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public class HomeController {
 	* Códigos: 201, 208, 500, 400, 503 (RFC 7231)
 	*/
 	private static final HttpStatus[] estados = {HttpStatus.CREATED,HttpStatus.ALREADY_REPORTED,
-		HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.BAD_REQUEST,HttpStatus.SERVICE_UNAVAILABLE};
+		HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.BAD_REQUEST,HttpStatus.SERVICE_UNAVAILABLE,HttpStatus.OK};
 	
 	@Autowired
 	DaoHistorial daoh;
@@ -73,7 +74,7 @@ public class HomeController {
 		
 		//Estado de la respuesta por defecto
 		HttpStatus estado = estados[4];
-		System.out.println("ParkingId: "+ historial.getParkingid()+"Matricula: "
+		System.out.println("ParkingId: "+ historial.getParkingId()+" Matricula: "
 				+ historial.getMatricula());
 		//Cabeceras
 		HttpHeaders cabeceras = new HttpHeaders();
@@ -85,7 +86,7 @@ public class HomeController {
 		SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = formatofecha.parse(formatofecha.format(fecha));
 
-		int parkingId = historial.getParkingid();
+		int parkingId = historial.getParkingId();
 		String matricula = historial.getMatricula();
 		DtoHistorial dtomap = new DtoHistorial(parkingId,matricula,date);
 		
@@ -97,24 +98,30 @@ public class HomeController {
 				if(coche==null){
 					existe = false;
 				}else{
-					if(coche.getParkingid()==1){
+					if(coche.getParkingId()==1){
 						existe = true;
 					}else{
 						existe = false;
 					}
 				}
-				
-				
-				//Si el coche no está dentro del parking y está en tabla credito
+				//Si el coche no está dentro del parking
 				if(!existe){
 					//Introducimos en la base de datos
 					daoh.insertar(dtomap);
+					daoc.insertar_matricula(dtomap);
 					//Devuelvo la respuesta con Status created
 					estado = estados[0];
 				}else{
 					//Ya introducido
-					estado = estados[1];
-					System.out.println("No puede entrar dos veces.");
+					if(dtomap.getParkingId()==0){
+						daoh.actualizar_barrera(dtomap);
+						daoc.actualizar_coste(dtomap.getMatricula(), 0);
+						System.out.println("Matricula ya registrada en la BBDD...\n Vuelve a entrar en el parking.");
+						estado = estados[5];
+					}else{
+						estado = estados[1];
+						System.out.println("Matricula dentro del parking. No puede entrar dos veces.");
+					}
 				}
 				break;
 			
@@ -124,7 +131,7 @@ public class HomeController {
 				
 				if(vehiculo!=null){
 					//Si no sale dos veces seguidas
-					if(vehiculo.getParkingid()!=1){
+					if(vehiculo.getParkingId()!=1){
 						//Obtenemos el tiempo de estacionamiento en milisegundos
 						long tiempo = date.getTime() - vehiculo.getTimestamp().getTime();
 						//Si no se produjo error al obtener el tiempo de estacionamiento
@@ -136,7 +143,7 @@ public class HomeController {
 								estado = estados[4];
 							}else{
 								//Registramos la salida en la tabla de historial
-								daoh.insertar(dtomap);
+								daoh.actualizar_barrera(dtomap);
 								//Devolvemos la respuesta con OK
 								estado = estados[0];
 							}
@@ -151,7 +158,7 @@ public class HomeController {
 					else{
 						//El vehiculo tiene registrado una entrada con una salida.
 						//Ya introducido
-						estado = estados[1];
+						estado = estados[3];
 						System.out.println("No puede salir dos veces");
 					}
 				}

@@ -9,6 +9,7 @@ public class DtoHistorial {
 	private String matricula;
 	private Date timestamp;
 	
+	
 	//Constructor por defecto.
 	public DtoHistorial() {
 	this.parkingId = 0;
@@ -16,29 +17,28 @@ public class DtoHistorial {
 	this.timestamp = null;
 	}
 	//Constructor 1 con parámetros.
-	public DtoHistorial(int parkingid, String matricula, Date timestamp){
-	this.parkingId = parkingid;
+	public DtoHistorial(int parkingId, String matricula, Date timestamp){
+	this.parkingId = parkingId;
 	this.matricula = matricula;
 	this.timestamp = timestamp;
 	}
 	//Constructor 2 con parámetros.
-	public DtoHistorial(String parkingid, String matricula, Date timestamp){
-	this.parkingId = Integer.parseInt(parkingid);
+	public DtoHistorial(String parkingId, String matricula, Date timestamp){
+	this.parkingId = Integer.parseInt(parkingId);
 	this.matricula = matricula;
 	this.timestamp = timestamp;
 	}
-	//Métodos de acceso.
 	public Date getTimestamp() {
-	return timestamp;
+		return timestamp;
 	}
 	public void setTimestamp(Date timestamp) {
-	this.timestamp = timestamp;
+		this.timestamp = timestamp;
 	}
-	public int getParkingid() {
+	public int getParkingId() {
 	return parkingId;
 	}
-	public void setParkingid(int parkingid) {
-	this.parkingId = parkingid;
+	public void setParkingId(int parkingId) {
+	this.parkingId = parkingId;
 	}
 	public String getMatricula() {
 	return matricula;

@@ -12,9 +12,10 @@
    <br><br>
    <input type="submit" value="Envia Datos"> 
 </form>
+
 <script type="text/javascript">
 	$('#enviar').submit(function(evento){
-		var urlrest = 'http://localhost:8080/parking/registroMatricula';
+		var urlrest = 'registroMatricula';
 		$.ajax({
 			url: urlrest,
 			type: 'POST',
